@@ -41,7 +41,7 @@
             color: inherit;
         }
         .secret-letter:active {
-            color: #1a73e8; /* Слегка подсветится только при самом клике */
+            color: #1a73e8;
         }
 
         /* Уведомление о копировании */
@@ -51,8 +51,31 @@
             display: none; z-index: 1000; box-shadow: 0 3px 5px rgba(0,0,0,0.3);
         }
 
-        .secret-content { display: none; flex-direction: column; align-items: center; background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
-        .secret-content img { max-width: 100%; border-radius: 4px; }
+        /* Финальная кнопка-ссылка */
+        .secret-content { 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            background: #fff; 
+            padding: 30px; 
+            border-radius: 8px; 
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .download-link {
+            display: inline-block;
+            background: #1a73e8;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 15px;
+            transition: background 0.2s;
+        }
+        .download-link:hover {
+            background: #1557b0;
+        }
     </style>
 </head>
 <body>
@@ -62,12 +85,10 @@
             <h2 class="auth-title">Вход</h2>
             
             <div class="input-group">
-                <!-- Замаскировали «а» в слове Имя -->
                 <label for="username">Им<span class="secret-letter" onclick="copySecret('a.mp3')">я</span> пользователя</label>
                 <input type="text" id="username" class="auth-input" autocomplete="off" autofocus>
             </div>
             <div class="input-group">
-                <!-- Замаскировали «б» в слове Пароль (буква 'о' заменена визуально) -->
                 <label for="password">Пар<span class="secret-letter" onclick="copySecret('b.mp3')">о</span>ль</label>
                 <input type="password" id="password" class="auth-input">
             </div>
@@ -81,20 +102,18 @@
         </div>
     </div>
 
+    <!-- Вместо img теперь ссылка в виде кнопки -->
     <div class="secret-content" id="secret-screen">
-        <a href="https://drive.google.com/file/d/1GtfyiMQ6xP4XFQu3B5Cs_tWghVXyTXuG/view?usp=sharing" alt="artifact">
+        <a href="https://drive.google.com/file/d/1GtfyiMQ6xP4XFQu3B5Cs_tWghVXyTXuG/view?usp=sharing" class="download-link" target="_blank">СКАЧАТЬ АРТЕФАКТ</a>
     </div>
 
-    <!-- Всплывашка для логов -->
     <div class="toast" id="toast">Ссылка на аудио-лог скопирована в буфер обмена.</div>
 
 <script>
     const CORRECT_USER = "ADMIN_H8oI0e8IY";
     const CORRECT_PASS = "hO93S13lD";
 
-    // Функция, которая копирует прямую ссылку на файл другу в буфер обмена без скачивания
     function copySecret(fileName) {
-        // Формируем полную ссылку на файл на твоем гитхабе
         const fullUrl = window.location.origin + window.location.pathname + fileName;
         
         navigator.clipboard.writeText(fullUrl).then(() => {
