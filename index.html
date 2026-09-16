@@ -2,46 +2,33 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход в систему</title>
+    <title>Вход</title>
     <style>
-        /* Минималистичный пустой фон */
         body {
             background-color: #f4f4f4;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 40px;
-            display: flex; flex-direction: column; align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0; padding: 0;
+            height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            position: relative;
         }
 
-        /* Блок со ссылками на аудио-логи (просто висит на странице) */
-        .download-zone {
-            text-align: center; margin-bottom: 50px; background: #fff;
-            padding: 20px; border-radius: 8px; border: 1px solid #ddd; width: 400px;
-        }
-        .audio-link {
-            display: inline-block; color: #0066cc; text-decoration: none;
-            margin: 10px; font-weight: bold; padding: 5px 10px; border: 1px solid #0066cc; border-radius: 4px;
-        }
-        .audio-link:hover { background: #0066cc; color: #fff; }
-
-        /* ВСПЛЫВАЮЩЕЕ ОКНО (Точная копия HTTP Basic Auth для Chrome/Yandex) */
+        /* Симуляция окна HTTP Basic Auth */
         .auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: center; z-index: 999;
         }
         .auth-modal {
             background: #fff; width: 420px; border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.25); padding: 24px;
-            box-sizing: border-box; position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25); padding: 24px; box-sizing: border-box;
         }
-        .auth-title { font-size: 19px; font-weight: 500; color: #202124; margin: 0 0 8px 0; }
-        .auth-subtitle { font-size: 13px; color: #5f6368; margin-bottom: 20px; line-height: 1.4; }
-        .auth-subtitle span { color: #202124; font-weight: 500; }
+        .auth-title { font-size: 19px; font-weight: 500; color: #202124; margin: 0 0 20px 0; }
         
-        .input-group { margin-bottom: 16px; position: relative; }
+        .input-group { margin-bottom: 16px; }
         .input-group label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 6px; }
         .auth-input {
             width: 100%; padding: 10px; border: 1px solid #dadce0; border-radius: 4px;
-            font-size: 14px; box-sizing: border-box; outline: none; transition: border-color 0.2s;
+            font-size: 14px; box-sizing: border-box; outline: none;
         }
         .auth-input:focus { border-color: #1a73e8; }
         
@@ -56,29 +43,29 @@
 
         #error-txt { color: #d93025; font-size: 13px; margin-top: 10px; display: none; }
 
-        /* ЭКРАН ПОСЛЕ УСПЕШНОГО ВХОДА (Стеганография) */
+        /* Тайная зона в самом низу страницы */
+        .hidden-zone {
+            position: absolute; bottom: 10px; left: 10px; opacity: 0.15; font-size: 11px;
+        }
+        .hidden-zone a {
+            color: #5f6368; text-decoration: none; margin-right: 15px;
+            pointer-events: none; cursor: default; /* Нажать нельзя */
+        }
+
+        /* Экран со стеганографией после успешного ввода */
         .secret-content {
             display: none; flex-direction: column; align-items: center;
-            background: #fff; padding: 30px; border-radius: 8px; border: 1px solid #ddd; max-width: 600px;
+            background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd;
         }
-        .secret-content img { max-width: 100%; border-radius: 4px; border: 1px solid #ccc; margin-bottom: 20px; }
+        .secret-content img { max-width: 100%; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <!-- Зона скачивания звуков (видна всегда) -->
-    <div class="download-zone" id="download-zone">
-        <h3>Для доступа требуются ключи верификации</h3>
-        <p style="font-size: 14px; color: #666;">Скачайте аудио-логи и извлеките данные авторизации:</p>
-        <a href="URL_НА_ЗВУК_ЛОГИНА.wav" class="audio-link" download>AUDIO_LOG_A.WAV</a>
-        <a href="URL_НА_ЗВУК_ПАРОЛЯ.wav" class="audio-link" download>AUDIO_LOG_B.WAV</a>
-    </div>
-
-    <!-- Модалка HTTP Basic Auth -->
+    <!-- Окно авторизации -->
     <div class="auth-overlay" id="auth-popup">
         <div class="auth-modal">
             <h2 class="auth-title">Вход</h2>
-            <div class="auth-subtitle">Подключение к сайту <span>квеста</span> не защищено. Требуется ввести имя пользователя и пароль.</div>
             
             <div class="input-group">
                 <label for="username">Имя пользователя</label>
@@ -89,29 +76,32 @@
                 <input type="password" id="password" class="auth-input">
             </div>
             
-            <div id="error-txt">Неверный логин или пароль. Попробуйте еще раз.</div>
+            <div id="error-txt">Неверный логин или пароль.</div>
 
             <div class="buttons-group">
-                <button class="btn" onclick="alert('Доступ отменен. Перезагрузите страницу для новой попытки.')">Отмена</button>
+                <button class="btn" onclick="document.getElementById('username').value=''; document.getElementById('password').value='';">Отмена</button>
                 <button class="btn btn-primary" onclick="validateCredentials()">Вход</button>
             </div>
         </div>
     </div>
 
-    <!-- Экран со СТЕГАНАГРАФИЕЙ (откроется при успехе) -->
+    <!-- Результат (Стеганография) -->
     <div class="secret-content" id="secret-screen">
-        <h2 style="color: #2e7d32; margin-top: 0;">✔ Авторизация успешна</h2>
-        <p style="color: #555; text-align: center;">Файл расшифрован и готов к анализу стеганографии. Найдите внутри скрытую строку Base64.</p>
-        
-        <!-- Ссылка на твою картинку со стеганографией -->
-        <img src="ССЫЛКА_НА_КАРТИНКУ_СО_СТЕГАНОГРАФИЕЙ.jpg" alt="Secret Artifact">
-        <a href="ССЫЛКА_НА_КАРТИНКУ_СО_СТЕГАНОГРАФИЕЙ.jpg" class="audio-link" style="margin: 0;" download>Скачать артефакт</a>
+        <!-- Сюда вставь прямую ссылку на картинку, в которой зашит Base64 -->
+        <img src="https://drive.google.com/file/d/1GtfyiMQ6xP4XFQu3B5Cs_tWghVXyTXuG/view?usp=sharing" alt="artifact">
+    </div>
+
+    <!-- Скрытые незаметные ссылки без возможности клика -->
+    <div class="hidden-zone">
+        <!-- Замени URL на реальные ссылки на свои .wav файлы спектрограмм -->
+        <a href="a.mp3">а</a>
+        <a href="b.mp3">б</a>
     </div>
 
 <script>
-    // ПРАВИЛЬНЫЕ ЛОГИН И ПАРОЛЬ (из спектрограмм)
-    const CORRECT_USER = "admin";
-    const CORRECT_PASS = "p4ssw0rd_99";
+    // Настройки авторизации из спектрограмм
+    const CORRECT_USER = "ADMIN_H8oI0e8IY";
+    const CORRECT_PASS = "hO93S13lD";
 
     function validateCredentials() {
         const user = document.getElementById('username').value.trim().toLowerCase();
@@ -119,15 +109,11 @@
         const error = document.getElementById('error-txt');
 
         if (user === CORRECT_USER && pass === CORRECT_PASS) {
-            // Прячем окно авторизации и зону скачивания
             document.getElementById('auth-popup').style.display = 'none';
-            document.getElementById('download-zone').style.display = 'none';
-            
-            // Показываем секретную картинку
             document.getElementById('secret-screen').style.display = 'flex';
         } else {
             error.style.display = 'block';
-            document.getElementById('password').value = ''; // очищаем поле пароля при ошибке
+            document.getElementById('password').value = '';
         }
     }
 </script>
