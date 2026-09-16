@@ -63,12 +63,12 @@
             
             <div class="input-group">
                 <!-- Замаскировали «а» в слове Имя -->
-                <label for="username">Им<span class="secret-letter" onclick="copySecret('a.mp3')">я</span> пользователя</label>
+                <label for="username">Им<span class="secret-letter" onclick="copySecret('a.wav')">я</span> пользователя</label>
                 <input type="text" id="username" class="auth-input" autocomplete="off" autofocus>
             </div>
             <div class="input-group">
                 <!-- Замаскировали «б» в слове Пароль (буква 'о' заменена визуально) -->
-                <label for="password">Пар<span class="secret-letter" onclick="copySecret('b.mp3')">о</span>ль</label>
+                <label for="password">Пар<span class="secret-letter" onclick="copySecret('b.wav')">о</span>ль</label>
                 <input type="password" id="password" class="auth-input">
             </div>
             
@@ -82,15 +82,15 @@
     </div>
 
     <div class="secret-content" id="secret-screen">
-        <img src="https://drive.google.com/file/d/1GtfyiMQ6xP4XFQu3B5Cs_tWghVXyTXuG/view?usp=sharing" alt="artifact">
+        <img src="artifact.jpg" alt="artifact">
     </div>
 
     <!-- Всплывашка для логов -->
     <div class="toast" id="toast">Ссылка на аудио-лог скопирована в буфер обмена.</div>
 
 <script>
-    const CORRECT_USER = "ADMIN_H8oI0e8IY";
-    const CORRECT_PASS = "hO93S13lD";
+    const CORRECT_USER = "admin";
+    const CORRECT_PASS = "p4ssw0rd_99";
 
     // Функция, которая копирует прямую ссылку на файл другу в буфер обмена без скачивания
     function copySecret(fileName) {
