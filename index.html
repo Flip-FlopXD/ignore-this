@@ -105,8 +105,8 @@
     }
 
     function validateCredentials() {
-        const user = document.getElementById('username').value.trim().toLowerCase();
-        const pass = document.getElementById('password').value.trim().toLowerCase();
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
         const error = document.getElementById('error-txt');
 
         if (user === CORRECT_USER && pass === CORRECT_PASS) {
