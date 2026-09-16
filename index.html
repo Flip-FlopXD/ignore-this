@@ -7,13 +7,9 @@
         body {
             background-color: #f4f4f4;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0; padding: 0;
-            height: 100vh;
+            margin: 0; padding: 0; height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            position: relative;
         }
-
-        /* Симуляция окна HTTP Basic Auth */
         .auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: center; z-index: 999;
@@ -23,7 +19,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.25); padding: 24px; box-sizing: border-box;
         }
         .auth-title { font-size: 19px; font-weight: 500; color: #202124; margin: 0 0 20px 0; }
-        
         .input-group { margin-bottom: 16px; }
         .input-group label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 6px; }
         .auth-input {
@@ -31,7 +26,6 @@
             font-size: 14px; box-sizing: border-box; outline: none;
         }
         .auth-input:focus { border-color: #1a73e8; }
-        
         .buttons-group { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
         .btn {
             padding: 9px 16px; font-size: 14px; font-weight: 500; border-radius: 4px;
@@ -39,40 +33,42 @@
         }
         .btn-primary { background: #1a73e8; color: #fff; border: none; }
         .btn-primary:hover { background: #1557b0; }
-        .btn:not(.btn-primary):hover { background: #f8f9fa; color: #174ea6; }
-
         #error-txt { color: #d93025; font-size: 13px; margin-top: 10px; display: none; }
 
-        /* Тайная зона в самом низу страницы */
-        .hidden-zone {
-            position: absolute; bottom: 10px; left: 10px; opacity: 0.15; font-size: 11px;
+        /* Секретные буквы-пасхалки */
+        .secret-letter {
+            cursor: default;
+            color: inherit;
         }
-        .hidden-zone a {
-            color: #5f6368; text-decoration: none; margin-right: 15px;
-            pointer-events: none; cursor: default; /* Нажать нельзя */
+        .secret-letter:active {
+            color: #1a73e8; /* Слегка подсветится только при самом клике */
         }
 
-        /* Экран со стеганографией после успешного ввода */
-        .secret-content {
-            display: none; flex-direction: column; align-items: center;
-            background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd;
+        /* Уведомление о копировании */
+        .toast {
+            position: fixed; bottom: 20px; background: #323232; color: #fff;
+            padding: 12px 24px; border-radius: 4px; font-size: 14px;
+            display: none; z-index: 1000; box-shadow: 0 3px 5px rgba(0,0,0,0.3);
         }
+
+        .secret-content { display: none; flex-direction: column; align-items: center; background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
         .secret-content img { max-width: 100%; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <!-- Окно авторизации -->
     <div class="auth-overlay" id="auth-popup">
         <div class="auth-modal">
             <h2 class="auth-title">Вход</h2>
             
             <div class="input-group">
-                <label for="username">Имя пользователя</label>
+                <!-- Замаскировали «а» в слове Имя -->
+                <label for="username">Им<span class="secret-letter" onclick="copySecret('a.mp3')">я</span> пользователя</label>
                 <input type="text" id="username" class="auth-input" autocomplete="off" autofocus>
             </div>
             <div class="input-group">
-                <label for="password">Пароль</label>
+                <!-- Замаскировали «б» в слове Пароль (буква 'о' заменена визуально) -->
+                <label for="password">Пар<span class="secret-letter" onclick="copySecret('b.mp3')">о</span>ль</label>
                 <input type="password" id="password" class="auth-input">
             </div>
             
@@ -85,23 +81,28 @@
         </div>
     </div>
 
-    <!-- Результат (Стеганография) -->
     <div class="secret-content" id="secret-screen">
-        <!-- Сюда вставь прямую ссылку на картинку, в которой зашит Base64 -->
         <img src="https://drive.google.com/file/d/1GtfyiMQ6xP4XFQu3B5Cs_tWghVXyTXuG/view?usp=sharing" alt="artifact">
     </div>
 
-    <!-- Скрытые незаметные ссылки без возможности клика -->
-    <div class="hidden-zone">
-        <!-- Замени URL на реальные ссылки на свои .wav файлы спектрограмм -->
-        <a href="a.mp3">а</a>
-        <a href="b.mp3">б</a>
-    </div>
+    <!-- Всплывашка для логов -->
+    <div class="toast" id="toast">Ссылка на аудио-лог скопирована в буфер обмена.</div>
 
 <script>
-    // Настройки авторизации из спектрограмм
     const CORRECT_USER = "ADMIN_H8oI0e8IY";
     const CORRECT_PASS = "hO93S13lD";
+
+    // Функция, которая копирует прямую ссылку на файл другу в буфер обмена без скачивания
+    function copySecret(fileName) {
+        // Формируем полную ссылку на файл на твоем гитхабе
+        const fullUrl = window.location.origin + window.location.pathname + fileName;
+        
+        navigator.clipboard.writeText(fullUrl).then(() => {
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        });
+    }
 
     function validateCredentials() {
         const user = document.getElementById('username').value.trim().toLowerCase();
